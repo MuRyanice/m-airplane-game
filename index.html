@@ -7,6 +7,7 @@
     <title>打飞机游戏</title>
     <style>
         * { margin: 0; padding: 0; }
+       
           button {
           position: absolute;
           bottom: 20px;
@@ -22,16 +23,33 @@
         button:hover {
           background-color: #555;
         }
+         html, body {
+        height: 100%;
+      }
+          body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #000; /* 如果需要，可以将此颜色更改为与背景图像匹配的颜色 */
+          }
     </style>
 </head>
 <body>
     <body style="touch-action: none;">
-    <canvas id="gameCanvas" width="340" height="800"></canvas>
-    <button id="restartButton">重新开始</button>
+    <canvas id="gameCanvas" width="340" height="640"></canvas>
     <script>
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
         let lives = 10;  // 初始化友军生命值为10
+        let gameStopped = false;//重新开始
+       
+        const backgroundImg = new Image();
+        backgroundImg.src = 'background.png'; // 请将 background.jpg 替换为您的背景图片地址
+
+        // backgroundImg.onload = function () {
+        //   startGame();
+        // };
+
 
         const playerImg = new Image();
         playerImg.src = 'player.png';
@@ -65,16 +83,30 @@
             setInterval(spawnSupplyDrop, 15000);
             setInterval(shootBullet, 200);
         }
-        
+      
+        let hasAlerted = false; // 在stopGame外面添加一个变量来检查是否已经弹出警告
 
         function stopGame() {
-            clearInterval(gameInterval);
-            clearInterval(spawnEnemyInterval);
-            clearInterval(spawnBigEnemyInterval);
+          if (hasAlerted) return; // 如果已经弹出警告，直接返回
+
+          clearInterval(gameInterval);
+          clearInterval(spawnEnemyInterval);
+          clearInterval(spawnBigEnemyInterval);
+          clearInterval(spawnPowerUpInterval);
+          clearInterval(enemyShootInterval);
+          gameStopped = true;
+
+          setTimeout(() => {
+            alert('游戏结束！得分：' + score);
+            hasAlerted = true; // 标记警告已弹出
+          }, 100);
         }
+
+
 
         function updateGame() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(backgroundImg, 0, 0, canvas.width, canvas.height);
 
             ctx.drawImage(playerImg, player.x, player.y, player.width, player.height);
             movePlayer();
@@ -254,24 +286,43 @@ function handleTouchMove(event) {
     }
   }
 }
-        //监听重新开始按钮
-document.getElementById("restartButton").addEventListener("click", () => {
-  stopGame();
-  score = 0;
-  lives = 10;
-  player.x = canvas.width / 2;
-  player.y = canvas.height - 30;
-  bullets = [];
-  enemies = [];
-  startGame();
-});
 
-
-canvas.addEventListener("touchstart", handleTouchStart, false);
-canvas.addEventListener("touchmove", handleTouchMove, false);
+    canvas.addEventListener("touchstart", handleTouchStart, false);
+    canvas.addEventListener("touchmove", handleTouchMove, false);
 
     canvas.addEventListener('click', shootBullet);
     startGame();
+
+
+        //监听重新开始按钮
+        document.getElementById('restartButton').addEventListener('click', restartGame);
+
+        function restartGame() {
+          if (!gameStopped) {
+            return;
+          }
+           hasAlerted = false; // 重置hasAlerted变量
+          // 重置游戏状态
+          player.x = canvas.width / 2;
+          player.y = canvas.height - 30;
+          bullets.length = 0;
+          enemies.length = 0;
+          enemyBullets.length = 0;
+          supplyDrops.length = 0; // 这里原本是 powerUps.length = 0;，我已将其更正
+          score = 0;
+          lives = 10; // 重置生命值
+          gameStopped = false; // 添加这一行代码
+
+          // 重置 keyState 对象
+        for (const key in keyState) {
+            keyState[key] = false;
+        }
+
+          // 重新启动游戏循环
+          startGame();
+        }
+
+
 
 </script>
 </body>
