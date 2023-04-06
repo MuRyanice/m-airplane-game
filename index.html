@@ -7,7 +7,7 @@
     <title>打飞机游戏</title>
     <style>
         * { margin: 0; padding: 0; }
-        body {
+      body {
           background-color: #222;
           display: flex;
           justify-content: center;
@@ -15,17 +15,18 @@
           height: 100vh;
           overflow: hidden;
         }
-        canvas {
+      canvas {
           max-width: 100%;
           max-height: 100%;
           border: 1px solid #fff;
+          object-fit: contain;
         }
-
     </style>
 </head>
 <body>
     <body style="touch-action: none;">
-    <canvas id="gameCanvas" width="640" height="480"></canvas>
+    <canvas id="gameCanvas" width="360" height="640"></canvas>
+
     <script>
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
