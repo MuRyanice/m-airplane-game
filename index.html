@@ -7,26 +7,27 @@
     <title>打飞机游戏</title>
     <style>
         * { margin: 0; padding: 0; }
-      body {
-          background-color: #222;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          height: 100vh;
-          overflow: hidden;
-        }
-      canvas {
-          max-width: 100%;
-          max-height: 100%;
+          button {
+          position: absolute;
+          bottom: 20px;
+          left: 50%;
+          transform: translateX(-50%);
+          padding: 10px 20px;
+          font-size: 18px;
+          color: #fff;
+          background-color: #333;
           border: 1px solid #fff;
-          object-fit: contain;
+          cursor: pointer;
+        }
+        button:hover {
+          background-color: #555;
         }
     </style>
 </head>
 <body>
     <body style="touch-action: none;">
-    <canvas id="gameCanvas" width="360" height="640"></canvas>
-
+    <canvas id="gameCanvas" width="768" height="1072"></canvas>
+    <button id="restartButton">重新开始</button>
     <script>
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
@@ -253,6 +254,18 @@ function handleTouchMove(event) {
     }
   }
 }
+        //监听重新开始按钮
+document.getElementById("restartButton").addEventListener("click", () => {
+  stopGame();
+  score = 0;
+  lives = 10;
+  player.x = canvas.width / 2;
+  player.y = canvas.height - 30;
+  bullets = [];
+  enemies = [];
+  startGame();
+});
+
 
 canvas.addEventListener("touchstart", handleTouchStart, false);
 canvas.addEventListener("touchmove", handleTouchMove, false);
